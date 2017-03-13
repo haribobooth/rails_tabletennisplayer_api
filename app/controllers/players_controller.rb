@@ -11,9 +11,9 @@ class PlayersController < ApplicationController
   def new
     @new_player = Player.new
 
-    @new_player.name = params["name"]
-    @new_player.country = params["country"]
-    @new_player.rank = params["rank"]
+    @new_player.name = new_player["name"]
+    @new_player.country = new_player["country"]
+    @new_player.rank = new_player["rank"]
 
     @new_player.save
 
@@ -21,9 +21,12 @@ class PlayersController < ApplicationController
   end
 
   def edit
-    params[:new_info].each do |key, value|
-      Player.update(params[:id], key => value)
-    end
+    # params[:new_info].each do |key, value|
+    #   Player.update(params[:id], key => value)
+    # end
+
+    @player_to_edit = Player.find(params[:id])
+    @player_to_edit.update_attributes(update_params)
 
     render json: Player.find(params[:id])
   end
@@ -32,5 +35,13 @@ class PlayersController < ApplicationController
     Player.delete(params[:id])
 
     render json: Player.all
+  end
+
+  def update_params
+    params.require(:new_info).permit([:name, :country, :rank])
+  end
+
+  def new_player
+    params.require(:new_player).permit([:name, :country, :rank])
   end
 end
